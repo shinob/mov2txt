@@ -107,6 +107,11 @@ def check_prerequisites(hf_token: str | None) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="動画・音声ファイルを文字起こしします")
     parser.add_argument("filename", help="mov/ 内のファイル名、または動画・音声ファイルへのパス")
+    parser.add_argument(
+        "--language",
+        default="ja",
+        help="文字起こし言語コード（デフォルト: ja）。自動検出させる場合は空文字を指定してください",
+    )
     args = parser.parse_args()
 
     load_dotenv(BASE_DIR / ".env")
@@ -132,7 +137,10 @@ def main() -> None:
     model = whisperx.load_model(WHISPER_MODEL, device=DEVICE, compute_type=COMPUTE_TYPE)
 
     log_step(3, "文字起こしを実行しています...")
-    result = model.transcribe(audio, batch_size=BATCH_SIZE, print_progress=True)
+    transcribe_kwargs = {"batch_size": BATCH_SIZE, "print_progress": True}
+    if args.language:
+        transcribe_kwargs["language"] = args.language
+    result = model.transcribe(audio, **transcribe_kwargs)
     language = result.get("language", "ja")
     print(f"  検出言語: {language}")
 

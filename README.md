@@ -50,17 +50,24 @@
 
 ```bash
 source venv/bin/activate
-python mov2txt.py <filename>
+python mov2txt.py <filename> [--language <言語コード>]
 ```
 
 - `filename` は `mov/` 内のファイル名、または任意のパスを指定可能
+- `--language` は文字起こしの言語（既定: `ja`）。空文字 `""` を指定すると自動判定
 - 出力は `txt/<ファイル名>.csv` に保存される
+
+```bash
+python mov2txt.py 会議.mp4                 # 日本語（既定）
+python mov2txt.py talk.mp4 --language en   # 英語
+python mov2txt.py clip.mp4 --language ""   # 自動判定
+```
 
 ## 処理の流れ
 
 1. 音声抽出（FFmpegで16kHzモノラルWAVに変換 → `tmp/`）
 2. Whisperモデルの読み込み（large-v3, float16）
-3. 文字起こし
+3. 文字起こし（`--language` で指定した言語。未指定時は日本語）
 4. タイムスタンプのアライメント
 5. 話者分離（pyannote/speaker-diarization-community-1）
 6. CSV書き出し
@@ -70,6 +77,7 @@ python mov2txt.py <filename>
 - CSV（UTF-8 BOM付き）
 - 列: `時間,発話者,発言`
 - タイムスタンプ形式: `HH:MM:SS`
+- 発話者: `SPEAKER_00`, `SPEAKER_01` … の形式（実名には変換されない）。話者を判定できなかった発言は `不明`
 
 ## フォルダ構成
 

@@ -22,3 +22,6 @@ tmp/*
 # 文字起こし結果（txt/）
 txt/*
 !txt/.gitkeep
+
+task/*
+
