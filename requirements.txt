@@ -1,2 +1,5 @@
 whisperx
 python-dotenv
+fastapi
+uvicorn
+python-multipart
